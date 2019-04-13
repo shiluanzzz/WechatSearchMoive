@@ -39,14 +39,17 @@ def test():
 
 
 def auto_find_vip_movies():
+    count=1
     # 自动检测有没有新的vip电影场次 每10分钟自动检测一次
     origin_data = xinfulanhai.find_vip_movie()
-
+    file=open("count.txt",'w',encoding="utf8")
     while 1:
         now_data = xinfulanhai.find_vip_movie()
         if origin_data == now_data:
             if AutoSendFlag:
                 send_message_to_filehelper("没有检测到会员电影场次变化 QAQ")
+                file.write(count)
+                count+=1
         else:
             message = "****检测到会员电影场次变化****+\n"
             for each in origin_data:
@@ -109,7 +112,7 @@ def text_reply(msg):
                     mess = "电影:{}\n********\n类型:{}\n********\n简介：{}\n********\n".format(info['name'],
                                                                                         info['other'],
                                                                                         info['jianjie'])
-                    mess+="以下为评论：\n********\n"
+                    mess += "以下为评论：\n********\n"
                     for each in info['comments']:
                         mess += each
                         mess += "\n--------------------------------------------\n"
@@ -120,9 +123,9 @@ def text_reply(msg):
                 send_message_to_filehelper("正确查询方式 序号+电影名称")
         else:
             mess4 = "1. 查询电影档期\n" \
-                   "2. 查询会员场信息\n" \
-                   "3. 查询所有电影\n" \
-                   "4. 查询电影评分\n"
+                    "2. 查询会员场信息\n" \
+                    "3. 查询所有电影\n" \
+                    "4. 查询电影评分\n"
             send_message_to_filehelper(mess4)
     except:
         error_message = traceback.format_exc()
