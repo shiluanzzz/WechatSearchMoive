@@ -7,7 +7,13 @@ import traceback
 
 from bs4 import BeautifulSoup
 import requests
-
+import logging
+logger=logging.getLogger(__name__) # 设置日志名称
+logger.setLevel(logging.INFO) #设置日志打印等级
+handler=logging.FileHandler("log.txt") # 创建日志文件
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')# 设置日志的打印格式
+handler.setFormatter(formatter) #
+logger.addHandler(handler)
 
 def find_all_movies():
     movies_date = {}
@@ -64,28 +70,28 @@ def find_all_movies():
                             vip_days.append("{} : {}, {}".format(movie_name, movies_day, print_str))
                     movies_date[movie_name]["movies_day"].append(temp_dict)
                 except:
+                    logger.error(traceback.format_exc())
                     pass
 
         movies_date.setdefault('vip', vip_days)
     except:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         file = open('error.html', 'w', encoding='utf8')
         file.write(r.text)
     return movies_date
-
 
 def pretty_dict(my_dict):  # 美观打印
     # 利用json的打印 友好打印字典等结构。备用
     print(json.dumps(my_dict, ensure_ascii=False, indent=1))
 
-
 def get_all_movie_names():
     data = find_all_movies()
-    message = ""
+    message = "全部电影：\n=======================\n"
     for key in data.keys():
         message += key
         message += '\n'
     return message
+
 
 
 def func(ddd):
@@ -117,7 +123,6 @@ def func(ddd):
             break
     pass
 
-
 def find_movie(movie_name):
     data = find_all_movies()
     for key in data.keys():
@@ -126,17 +131,14 @@ def find_movie(movie_name):
             return dd
     return None
 
-
 def find_vip_movie():
     data = find_all_movies()
     return data['vip']
-
 
 def write_json():
     data = find_all_movies()
     file = open("data.json", "w", encoding='utf8')
     json.dump(data, file, ensure_ascii=False)
-
 
 def get_movies_info(word):
     data = find_all_movies()
@@ -181,7 +183,7 @@ def get_movies_info_by_id(movid_id):  # 爬取电影的简介，评论等。
                 "comments": comments_list}
         return info
     except:
-        traceback.print_exc()
+        logger.error(traceback.format_exc())
         return None
 
 
