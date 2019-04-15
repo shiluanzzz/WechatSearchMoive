@@ -63,7 +63,7 @@ def auto_find_vip_movies():
 @itchat.msg_register(itchat.content.TEXT)
 def text_reply(msg):
     # if msg.actualNickName=="石头":
-    if msg.fromUserName=="@9e5597c75b13e9acf5daec6bd780cbbd72bf21b643dcff53012760707f912e66":
+    if 1:
         try:
             if "1" in msg.text:
                 flag = 1
@@ -75,7 +75,7 @@ def text_reply(msg):
                     flag = 0
                 try:
                     count=str(msg.text).split(" ")[2]
-                    count=int(count)
+                    count=int(count)+1
                 except:
                     logger.error(traceback.format_exc())
                     count=5
@@ -87,14 +87,15 @@ def text_reply(msg):
                         for each in message:
                             keyyy = ""
                             count-=1
-                            if count:
+                            if count>0:
                                 for key in each.keys():
                                     string = string + '时间:' + key + '\n=======================\n'
                                     keyyy = key
                                 for values in each[keyyy]:
                                     string = string + values + "\n"
-                                    string += "======================="
-                                    string += '\n'
+
+                                string += "======================="
+                                string += '\n'
                     else:
                         string += "没有查询到相关电影  QAQ!"
                     send_message_to_filehelper(string)
@@ -138,8 +139,7 @@ def text_reply(msg):
         except:
             error_message = traceback.format_exc()
             send_message_to_filehelper(error_message)
-    else:
-        pass
+
 
 itchat.auto_login(enableCmdQR=2, hotReload=True)  # enableCmdQR在终端或命令行中为True,在notebook中为=1
 
