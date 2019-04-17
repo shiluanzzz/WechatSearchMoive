@@ -1,14 +1,16 @@
 # =*= coding:utf=8 =*=
 # __author__ = "shitou6"
-import traceback
-import time
-import itchat
+import logging
 # 登录微信
 import threading
+import time
+import traceback
+
+import itchat
+
+import wechat_api
 import xinfulanhai
 
-
-import logging
 logger=logging.getLogger(__name__) # 设置日志名称
 logger.setLevel(logging.INFO) #设置日志打印等级
 handler=logging.FileHandler("log.txt") # 创建日志文件
@@ -63,9 +65,9 @@ def auto_find_vip_movies():
 @itchat.msg_register(itchat.content.TEXT)
 def text_reply(msg):
     # if msg.actualNickName=="石头":
-    if 1:
+    if '1' or '2' or '3' or '4' or 'help' or '墨墨' in msg.text:
         try:
-            if "1" in msg.text:
+            if "1" in msg.text[:2]:
                 flag = 1
                 try:
                     name = str(msg.text).split(" ")[1]
@@ -101,14 +103,14 @@ def text_reply(msg):
                     send_message_to_filehelper(string)
                 else:
                     send_message_to_filehelper("正确查询方式 序号+电影名称")
-            elif "2" == msg.text or "会员" in msg.text:
+            elif "2" == msg.text[:2] or "会员" in msg.text:
                 message = xinfulanhai.find_vip_movie()
                 send_message_to_filehelper("正在查询会员场电影信息")
                 send_message_to_filehelper("\n============================================\n".join(message))
-            elif "3" in msg.text:
+            elif "3" in msg.text[:2]:
                 mess = xinfulanhai.get_all_movie_names()
                 send_message_to_filehelper(mess)
-            elif "4" in msg.text:
+            elif "4" in msg.text[:2]:
                 flag = 1
                 try:
                     word = msg.text.split(" ")[1]
@@ -130,7 +132,19 @@ def text_reply(msg):
                         send_message_to_filehelper("没有查询到相关简介QAQ")
                 else:
                     send_message_to_filehelper("正确查询方式 序号+电影名称")
-            else:
+            elif "墨墨" in msg.text[:5]:
+                try:
+                    link = msg.text.split(' ')[1]
+                    send_message_to_filehelper("匹配到link： " + str(link))
+                    send_message_to_filehelper("正在随机访问url")
+                    if "www." in link:
+                        str2 = wechat_api.do_url(link)
+                        send_message_to_filehelper(str2)
+                    else:
+                        send_message_to_filehelper("格式错误！")
+                except:
+                    send_message_to_filehelper(traceback.format_exc())
+            elif "help" in msg.text:
                 mess4 = "1. 查询电影档期\n" \
                         "2. 查询会员场信息\n" \
                         "3. 查询所有电影\n" \
@@ -139,7 +153,8 @@ def text_reply(msg):
         except:
             error_message = traceback.format_exc()
             send_message_to_filehelper(error_message)
-
+    else:
+        pass
 
 itchat.auto_login(enableCmdQR=2, hotReload=True)  # enableCmdQR在终端或命令行中为True,在notebook中为=1
 
