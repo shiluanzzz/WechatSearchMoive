@@ -52,8 +52,11 @@ def auto_find_vip_movies():
         else:
             message = "****检测到会员电影场次变化****+\n"
             for each in now_data:
-                message += each
-                message += "\n"
+                ss = str(each).split('|')
+                message += '电影名称:' + ss[0] + '\n'
+                message += '时间：' + ss[1] + '\n'
+                message += '信息：' + ss[2] + '\n'
+                message += "--------"
             message += "****打印完毕****"
             send_message_to_filehelper(message)
 
@@ -104,9 +107,18 @@ def text_reply(msg):
                 else:
                     send_message_to_filehelper("正确查询方式 序号+电影名称")
             elif "2" == msg.text[:2] or "会员" in msg.text:
-                message = xinfulanhai.find_vip_movie()
+                now_data = xinfulanhai.find_vip_movie()
+
                 send_message_to_filehelper("正在查询会员场电影信息")
-                send_message_to_filehelper("\n============================================\n".join(message))
+                message = ""
+                for each in now_data:
+                    ss = str(each).split('|')
+                    message += '电影名称:' + ss[0] + '\n'
+                    message += '时间：' + ss[1] + '\n'
+                    message += '信息：' + ss[2] + '\n'
+                    message += "---------------------------\n"
+                message += "****打印完毕****"
+                send_message_to_filehelper(message)
             elif "3" in msg.text[:2]:
                 mess = xinfulanhai.get_all_movie_names()
                 send_message_to_filehelper(mess)
@@ -156,9 +168,11 @@ def text_reply(msg):
     else:
         pass
 
-itchat.auto_login(enableCmdQR=2, hotReload=True)  # enableCmdQR在终端或命令行中为True,在notebook中为=1
 
-t1 = threading.Thread(target=itchat.run)
-t2 = threading.Thread(target=auto_find_vip_movies)
-t1.start()
-t2.start()
+if __name__ == '__main__':
+    itchat.auto_login(hotReload=True)
+    t1 = threading.Thread(target=itchat.run)
+    t2 = threading.Thread(target=auto_find_vip_movies)
+    t1.start()
+    t2.start()
+    # auto_find_vip_movies()

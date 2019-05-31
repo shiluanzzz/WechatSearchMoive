@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
 # __author__ = "shitou6"
 import json
+import logging
 import random
-import time
 import traceback
 
-from bs4 import BeautifulSoup
 import requests
-import logging
+from bs4 import BeautifulSoup
+
 logger=logging.getLogger(__name__) # 设置日志名称
 logger.setLevel(logging.INFO) #设置日志打印等级
 handler=logging.FileHandler("log.txt") # 创建日志文件
@@ -67,7 +67,7 @@ def find_all_movies():
                         # print(print_str)
                         temp_dict[movies_day].append(print_str)
                         if begin_time == "18:00":
-                            vip_days.append("{} : {}, {}".format(movie_name, movies_day, print_str))
+                            vip_days.append("{} | {} | {}".format(movie_name, movies_day, print_str))
                     movies_date[movie_name]["movies_day"].append(temp_dict)
                 except:
                     logger.error(traceback.format_exc())
@@ -133,7 +133,13 @@ def find_movie(movie_name):
 
 def find_vip_movie():
     data = find_all_movies()
-    return data['vip']
+    now_data = data['vip']
+
+    def return_item(ss):
+        return int(ss.split('|')[1].split(' ')[2].split('月')[1][:-1])
+
+    now_data.sort(key=return_item)
+    return now_data
 
 def write_json():
     data = find_all_movies()
@@ -191,4 +197,7 @@ if __name__ == '__main__':
     # pretty_dict(find_vip_movie())
 
     # write_json()
-    print(get_movies_info("调音"))
+    # print(get_movies_info("调音"))
+
+    a = find_all_movies()
+    print(a)
