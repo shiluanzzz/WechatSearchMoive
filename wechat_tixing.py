@@ -8,7 +8,6 @@ import traceback
 
 import itchat
 
-import wechat_api
 import xinfulanhai
 
 logger=logging.getLogger(__name__) # 设置日志名称
@@ -145,17 +144,7 @@ def text_reply(msg):
                 else:
                     send_message_to_filehelper("正确查询方式 序号+电影名称")
             elif "墨墨" in msg.text[:5]:
-                try:
-                    link = msg.text.split(' ')[1]
-                    send_message_to_filehelper("匹配到link： " + str(link))
-                    send_message_to_filehelper("正在随机访问url")
-                    if "www." in link:
-                        str2 = wechat_api.do_url(link)
-                        send_message_to_filehelper(str2)
-                    else:
-                        send_message_to_filehelper("格式错误！")
-                except:
-                    send_message_to_filehelper(traceback.format_exc())
+                send_message_to_filehelper("该模块已注销！")
             elif "help" in msg.text:
                 mess4 = "1. 查询电影档期\n" \
                         "2. 查询会员场信息\n" \
@@ -170,9 +159,16 @@ def text_reply(msg):
 
 
 if __name__ == '__main__':
-    itchat.auto_login(hotReload=True)
+    flag = int(input("(1) windows?\n(2)ipad?\n(3)linux?\n"))
+    QR = 1
+    if flag == 1:
+        QR = 2
+    elif flag == 2:
+        QR = -2
+    elif flag == 3:
+        QR = 2
+    itchat.auto_login(enableCmdQR=QR, hotReload=True)
     t1 = threading.Thread(target=itchat.run)
     t2 = threading.Thread(target=auto_find_vip_movies)
     t1.start()
     t2.start()
-    # auto_find_vip_movies()
